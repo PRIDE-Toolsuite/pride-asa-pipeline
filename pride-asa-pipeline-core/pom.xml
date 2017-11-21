@@ -16,7 +16,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <org.springframework.version>3.1.4.RELEASE</org.springframework.version>        
+        <org.springframework.version>3.1.4.RELEASE</org.springframework.version>
+        <pride-asa-pipeline-model.version>1.7.4.faster</pride-asa-pipeline-model.version>
     </properties>
     
     <!-- Licence -->
@@ -119,7 +120,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.5.1</version>
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
@@ -315,26 +315,22 @@
             <name>Genesis maven repository</name>
             <url>http://genesis.UGent.be/maven</url>
             <layout>default</layout>
-        </repository> 
-        
+        </repository>
+
         <repository>
-            <id>ebi-repo</id>
-            <name>The EBI internal repository</name>
-            <url>http://www.ebi.ac.uk/~maven/m2repo</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>                                              
+            <id>pst-release</id>
+            <name>EBI Nexus Repository</name>
+            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-release</url>
+        </repository>
+        
+
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>com.compomics.pride-asa-pipeline</groupId>
             <artifactId>pride-asa-pipeline-model</artifactId>    
-            <version>1.7.3-SNAPSHOT</version>    
+            <version>${pride-asa-pipeline-model.version}</version>
         </dependency>
   
         <dependency>
@@ -393,13 +389,7 @@
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxws</artifactId>
         </dependency>
-        
-        <!--        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http-jetty</artifactId>
-            <version>2.7.5</version>
-        </dependency>            -->
-        
+
         <dependency>
             <groupId>no.uib</groupId>
             <artifactId>ols-dialog</artifactId>
@@ -419,7 +409,7 @@
         <dependency>
             <groupId>uk.ac.ebi.pride.utilities</groupId>
             <artifactId>ms-data-core-api</artifactId>
-            <version>2.0.6-SNAPSHOT</version>
+            <version>2.0.15-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -429,10 +419,11 @@
             <scope>test</scope>
             <type>jar</type>
         </dependency>
+
         <dependency>
             <groupId>uk.ac.ebi.jmzidml</groupId>
             <artifactId>jmzidentml</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <version>1.2.7</version>
             <type>jar</type>
         </dependency>
         <dependency>

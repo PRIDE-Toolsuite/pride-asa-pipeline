@@ -28,7 +28,7 @@ import uk.ac.ebi.pride.tools.jmzreader.model.impl.CvParam;
 import uk.ac.ebi.pride.tools.mgf_parser.MgfFile;
 import uk.ac.ebi.pride.tools.ms2_parser.Ms2File;
 import uk.ac.ebi.pride.tools.mzdata_parser.MzDataFile;
-import uk.ac.ebi.pride.tools.mzml_wrapper.MzMlWrapper;
+import uk.ac.ebi.pride.tools.mzdata_wrapper.MzMlWrapper;
 import uk.ac.ebi.pride.tools.mzxml_parser.MzXMLFile;
 import uk.ac.ebi.pride.tools.mzxml_parser.MzXMLParsingException;
 import uk.ac.ebi.pride.tools.pkl_parser.PklFile;

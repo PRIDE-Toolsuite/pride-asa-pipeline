@@ -11,21 +11,14 @@
         <module>pride-asa-pipeline-model</module>
         <module>pride-asa-pipeline-core</module>
     </modules>
+
     <name>pride-asa-pipeline</name>
     <url>https://code.google.com/p/pride-asa-pipeline/</url>
-
-    <issueManagement>
-        <url>https://code.google.com/p/pride-asa-pipeline/issues/list</url>
-        <system>Google Code</system>
-    </issueManagement>
-
-    <scm>
-        <url>https://code.google.com/p/pride-asa-pipeline/source/browse/</url>
-    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.springframework.version>3.1.4.RELEASE</org.springframework.version>
+        <java.version>1.8</java.version>
     </properties>
 
     <build>
@@ -39,46 +32,17 @@
                     <version>2.5.1</version>
                     <inherited>true</inherited>
                     <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
                         <showDeprecation>true</showDeprecation>
                         <debug>true</debug>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>versions-maven-plugin</artifactId>
-                    <version>2.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>2.10</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.5.7.201204190339</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>prepare-agent</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>report</id>
-                            <phase>prepare-package</phase>
-                            <goals>
-                                <goal>report</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
                 <!-- Pack sources on build -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.2</version>
+                    <version>3.0.0</version>
                     <executions>
                         <execution>
                             <id>attach-sources</id>
@@ -94,7 +58,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.9</version>
+                    <version>2.10.3</version>
                     <configuration>
                         <failOnError>false</failOnError>
                     </configuration>
@@ -133,9 +97,7 @@
         </plugins>
     </build>    
 
-    <repositories>       
-        
-        
+    <repositories>
                   
         <!-- EBI repo -->
         <repository>
@@ -329,44 +291,7 @@
             <version>1.2.17</version>
         </dependency>
         
-        
     </dependencies>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.5.2</version>
-                <configuration>
-                    <xmlOutput>true</xmlOutput>
-                    <xmlOutputDirectory>target/site</xmlOutputDirectory>
-                    <!-- <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile> -->
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <targetJdk>1.7</targetJdk>
-                    <ignoreAnnotations>false</ignoreAnnotations>
-                    <excludes>
-                        <exclude>**/view/*.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.5.1</version>
-                <configuration>
-                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                    <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
 
     <profiles>
         <profile>

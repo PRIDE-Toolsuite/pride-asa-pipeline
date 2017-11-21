@@ -189,7 +189,6 @@ public class PRIDEModificationFactory {
      * @return an instance of a converted modification using the provided
      * adapter
      * @throws
-     * com.compomics.pride_asa_pipeline.core.exceptions.ParameterExtractionException
      */
     public Object getModification(ModificationAdapter adapter, String ptmName) throws ParameterExtractionException {
         if (!modificationCache.containsKey(ptmName)) {

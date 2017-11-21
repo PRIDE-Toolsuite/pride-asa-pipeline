@@ -2,7 +2,6 @@ package com.compomics.pride_asa_pipeline.core.data.extractor;
 
 import com.compomics.pride_asa_pipeline.model.MGFExtractionException;
 import com.compomics.pride_asa_pipeline.core.repository.impl.combo.FileExperimentModificationRepository;
-import com.compomics.pride_asa_pipeline.core.repository.impl.combo.FileExperimentModificationRepository;
 import com.compomics.pride_asa_pipeline.core.repository.impl.file.FileSpectrumRepository;
 import com.compomics.pride_asa_pipeline.core.spring.ApplicationContextProvider;
 import com.compomics.pride_asa_pipeline.model.AnalyzerData;
@@ -59,7 +58,7 @@ public class FileParameterExtractor {
         //load into the spring setup
         ApplicationContextProvider.getInstance().setDefaultApplicationContext();
 
-        spectrumRepository = (FileSpectrumRepository) ApplicationContextProvider.getInstance().getBean("spectrumRepository");
+        spectrumRepository = ApplicationContextProvider.getInstance().getBean("spectrumRepository");
 
         //add a logger specific to this file
     }
