@@ -300,6 +300,23 @@ public class ParameterExtractor {
         }
     }
 
+
+    public void printReports(String outputFileName) throws IOException {
+        if (printableReports) {
+            LOGGER.info("Exporting reports...");
+            for (ExtractionReportGenerator reportGenerator : getReportGenerators()) {
+                LOGGER.debug("Exporting " + reportGenerator.getReportName());
+                File outputFile = new File(outputFileName);
+                try (FileOutputStream out = new FileOutputStream(outputFile)) {
+                    reportGenerator.writeReport(out);
+                }
+            }
+            printPRIDEAsapIdentificationResult(outputFileName);
+        } else {
+            LOGGER.info("Printing of reports was skipped : no metadata inference performed");
+        }
+    }
+
     public void printPRIDEAsapIdentificationResult(File outputFolder) {
         LOGGER.debug("Exporting PRIDE Asap identification reports");
         FileResultHandlerImpl3 fileResultHandler = new FileResultHandlerImpl3();
@@ -310,6 +327,18 @@ public class ParameterExtractor {
             }
         }
         fileResultHandler.writeResult(new File(outputFolder, "complete_id.txt"), completeIdentifications);
+    }
+
+    public void printPRIDEAsapIdentificationResult(String outputFolder) {
+        LOGGER.debug("Exporting PRIDE Asap identification reports");
+        FileResultHandlerImpl3 fileResultHandler = new FileResultHandlerImpl3();
+        List<Identification> completeIdentifications = spectrumAnnotator.getIdentifications().getCompleteIdentifications();
+        for (Identification ident : completeIdentifications) {
+            if (ident.getPipelineExplanationType() == null) {
+                ident.setPipelineExplanationType(PipelineExplanationType.UNEXPLAINED);
+            }
+        }
+        fileResultHandler.writeResult(new File(outputFolder + "_complete_id.txt"), completeIdentifications);
     }
 
     public void useDefaults(String assay) throws IOException, XmlPullParserException {

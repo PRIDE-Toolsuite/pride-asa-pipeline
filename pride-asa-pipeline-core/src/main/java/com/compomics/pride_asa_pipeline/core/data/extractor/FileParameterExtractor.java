@@ -28,10 +28,15 @@ import uk.ac.ebi.pride.tools.mzxml_parser.MzXMLParsingException;
  */
 public class FileParameterExtractor {
 
+    private String outputFile;
     /**
      * The output folder for the extraction
      */
-    private final File outputFolder;
+    private File outputFolder;
+
+    private Boolean processMGF = false;
+
+    private Boolean processIDs = true;
     /**
      * The Logger instance
      */
@@ -42,15 +47,25 @@ public class FileParameterExtractor {
     private FileExperimentModificationRepository modificationRepository;
     private AnalyzerData analyzerData;
 
-    public FileParameterExtractor(File outputFolder) throws IOException {
+    public FileParameterExtractor(File outputFolder, Boolean processMGF, Boolean processIDs) throws IOException {
         this.outputFolder = outputFolder;
+        this.processMGF = processMGF;
         this.analyzerData = AnalyzerData.getAnalyzerDataByAnalyzerType("");
+        this.processIDs = processIDs;
         init();
     }
 
     public FileParameterExtractor(File outputFolder, AnalyzerData analyzerData) throws IOException {
         this.outputFolder = outputFolder;
         this.analyzerData = analyzerData;
+        init();
+    }
+
+    public FileParameterExtractor(String outputFile, Boolean processMGF, Boolean processIDs) {
+        this.outputFile = outputFile;
+        this.processMGF = processMGF;
+        this.processIDs = processIDs;
+        this.analyzerData = AnalyzerData.getAnalyzerDataByAnalyzerType("");
         init();
     }
 
@@ -69,8 +84,13 @@ public class FileParameterExtractor {
         ParameterExtractor extractor = new ParameterExtractor(assay, analyzerData, modificationRepository);
         //extractor.setExperimentRepository(experimentRepository);
         IdentificationParameters parameters = extractor.getParameters();
-        extractor.printReports(outputFolder);
-        IdentificationParameters.saveIdentificationParameters(parameters, new File(outputFolder, assay + ".par"));
+        if(outputFile != null){
+            extractor.printReports(outputFile + ".report.out");
+            IdentificationParameters.saveIdentificationParameters(parameters, new File(outputFile));
+        } else{
+            extractor.printReports(outputFolder);
+            IdentificationParameters.saveIdentificationParameters(parameters, new File(outputFolder, ".par"));
+        }
         return parameters.getSearchParameters();
     }
 
@@ -92,7 +112,8 @@ public class FileParameterExtractor {
         experimentRepository.addPrideXMLFile(assay, inputFile);
         spectrumRepository.setExperimentIdentifier(assay);
         modificationRepository.setExperimentIdentifier(assay);
-        processSpectra();
+        if(processMGF)
+            processSpectra();
         return inferParameters(assay);
     }
 
@@ -107,7 +128,8 @@ public class FileParameterExtractor {
         experimentRepository.addMzID(assay, inputFile, peakFiles);
         spectrumRepository.setExperimentIdentifier(assay);
         modificationRepository.setExperimentIdentifier(assay);
-        processSpectra();
+        if(processMGF)
+            processSpectra();
         return inferParameters(assay);
     }
 
