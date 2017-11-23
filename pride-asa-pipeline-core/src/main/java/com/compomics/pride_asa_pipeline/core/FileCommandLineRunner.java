@@ -108,8 +108,6 @@ public class FileCommandLineRunner {
             while ((line = br.readLine()) != null) {
                 identificationsFilePaths.add(line);
             }
-        } catch (FileNotFoundException e) {
-            LOGGER.error(e.getMessage(), e);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }

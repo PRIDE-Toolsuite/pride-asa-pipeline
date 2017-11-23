@@ -351,8 +351,7 @@ public abstract class AbstractSpectrumAnnotator<T> {
         double threshold = Math.max(0.005, stats.getPercentile(2.5));
         //sort the map on values?
 
-        Comparator<Entry<Modification, Double>> byValue = (entry1, entry2) -> entry1.getValue().compareTo(
-                entry2.getValue());
+        Comparator<Entry<Modification, Double>> byValue = Comparator.comparing(Entry::getValue);
 
         totalModificationRates
                 .entrySet()
@@ -416,13 +415,9 @@ public abstract class AbstractSpectrumAnnotator<T> {
         sortedAnnotatedModifications.stream().map((modObject) -> (Modification) modObject).map((mod) -> {
             modQueue.offer(mod);
             return mod;
-        }).forEach((mod) -> {
-            sortedAllModifications.remove(mod);
-        });
+        }).forEach(sortedAllModifications::remove);
         //add the others
-        sortedAllModifications.stream().forEach((mod) -> {
-            modQueue.offer(mod);
-        });
+        sortedAllModifications.stream().forEach((mod) -> modQueue.offer(mod));
         LOGGER.info("Retrieved complete sorted modification map");
         return sortedAnnotatedModifications;
     }

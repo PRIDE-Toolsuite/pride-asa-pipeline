@@ -196,9 +196,7 @@ public class WebServiceParameterInference {
         try {
             ProjectDetail projectDetail = PrideWebService.getProjectDetail(detail.getProjectAccession());
             Set<String> ptmNames = projectDetail.getPtmNames();
-            for (String aPtm : ptmNames) {
-                annotatedPTMs.add(aPtm);
-            }
+            annotatedPTMs.addAll(ptmNames);
         } catch (IOException ex) {
             LOGGER.error("Something went wrong caching the modifications...");
         }

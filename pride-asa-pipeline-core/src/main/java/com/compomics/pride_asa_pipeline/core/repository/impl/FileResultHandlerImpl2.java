@@ -190,9 +190,7 @@ public class FileResultHandlerImpl2 implements FileResultHandler {
                 }
             }
             LOGGER.info("Finished reading " + spectrumAnnotatorResult.getNumberOfIdentifications() + " identifications for experiment " + experimentAccession);
-        } catch (UnknownAAException e) {
-            LOGGER.error(e.getMessage(), e);
-        } catch (FileNotFoundException e) {
+        } catch (UnknownAAException | FileNotFoundException e) {
             LOGGER.error(e.getMessage(), e);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
@@ -249,19 +247,19 @@ public class FileResultHandlerImpl2 implements FileResultHandler {
         Joiner fragmentIonNumberJoiner = Joiner.on(FRAGMENT_ION_NUMBER_DELIMITER);
         String currentIonType = constructIonType(fragmentIonAnnotations.get(0));
 
-        for (int i = 0; i < fragmentIonAnnotations.size(); i++) {
+        for (FragmentIonAnnotation fragmentIonAnnotation : fragmentIonAnnotations) {
             //check if the ion type is still the same
-            if (currentIonType.equals(constructIonType(fragmentIonAnnotations.get(i)))) {
+            if (currentIonType.equals(constructIonType(fragmentIonAnnotation))) {
                 //add fragment ion number to the correct ion type
-                fragmentIonNumbersByIonType.add(constructFragmentIonPeakValues(fragmentIonAnnotations.get(i)));
+                fragmentIonNumbersByIonType.add(constructFragmentIonPeakValues(fragmentIonAnnotation));
             } else {
                 //join fragment ion numbers by ion type
                 fragmentIonsByIonType.add(currentIonType + FRAGMENT_ION_NUMBERS_OPEN + fragmentIonNumberJoiner.join(fragmentIonNumbersByIonType) + FRAGMENT_ION_NUMBERS_CLOSE);
                 //clear fragment ion number list and add first element
                 fragmentIonNumbersByIonType.clear();
-                fragmentIonNumbersByIonType.add(constructFragmentIonPeakValues(fragmentIonAnnotations.get(i)));
+                fragmentIonNumbersByIonType.add(constructFragmentIonPeakValues(fragmentIonAnnotation));
                 //change current ion type
-                currentIonType = constructIonType(fragmentIonAnnotations.get(i));
+                currentIonType = constructIonType(fragmentIonAnnotation);
             }
         }
         //add the last fragment ion type        

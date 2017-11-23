@@ -45,20 +45,14 @@ public class SystematicMassErrorsController extends WindowAdapter {
         pipelineProceedDialog.addWindowListener(this);
 
         //add action listeners
-        pipelineProceedDialog.getCancelButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pipelineProceedDialog.setVisible(Boolean.FALSE);
-                experimentSelectionController.onAnnotationCanceled();
-            }
+        pipelineProceedDialog.getCancelButton().addActionListener(e -> {
+            pipelineProceedDialog.setVisible(Boolean.FALSE);
+            experimentSelectionController.onAnnotationCanceled();
         });
 
-        pipelineProceedDialog.getProceedButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pipelineProceedDialog.setVisible(Boolean.FALSE);
-                experimentSelectionController.onIdentificationsLoaded();
-            }
+        pipelineProceedDialog.getProceedButton().addActionListener(e -> {
+            pipelineProceedDialog.setVisible(Boolean.FALSE);
+            experimentSelectionController.onIdentificationsLoaded();
         });
 
     }

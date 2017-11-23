@@ -207,17 +207,14 @@ public class PipelineResultController {
                 identificationsPanel.getIdentificationsTable(), sortedIdentificationsList, TableComparatorChooser.MULTIPLE_COLUMN_MOUSE);
 
         //add listeners
-        identificationsPanel.getIdentificationsTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent lse) {
-                if (!lse.getValueIsAdjusting()) {
-                    if (identificationsPanel.getIdentificationsTable().getSelectedRow() != -1) {
-                        Identification identification = sortedIdentificationsList.get(identificationsPanel.getIdentificationsTable().getSelectedRow());
+        identificationsPanel.getIdentificationsTable().getSelectionModel().addListSelectionListener(lse -> {
+            if (!lse.getValueIsAdjusting()) {
+                if (identificationsPanel.getIdentificationsTable().getSelectedRow() != -1) {
+                    Identification identification = sortedIdentificationsList.get(identificationsPanel.getIdentificationsTable().getSelectedRow());
 
-                        SpectrumPanel spectrumPanel = spectrumPanelFactory.getSpectrumPanel(identification, mainController.getCurrentSpectrumAnnotator() instanceof FileSpectrumAnnotator);
+                    SpectrumPanel spectrumPanel = spectrumPanelFactory.getSpectrumPanel(identification, mainController.getCurrentSpectrumAnnotator() instanceof FileSpectrumAnnotator);
 
-                        addSpectrumPanel(spectrumPanel);
-                    }
+                    addSpectrumPanel(spectrumPanel);
                 }
             }
         });

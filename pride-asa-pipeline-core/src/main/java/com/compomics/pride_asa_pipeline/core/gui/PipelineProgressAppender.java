@@ -29,13 +29,7 @@ public class PipelineProgressAppender extends WriterAppender {
 
         //check if the controller is initialized
         if(pipelineProgressController != null) {
-            executorService.submit(new Runnable() {
-
-                @Override
-                public void run() {
-                    pipelineProgressController.setProgressInfoText(message);
-                }
-            });
+            executorService.submit(() -> pipelineProgressController.setProgressInfoText(message));
         }
 
     }

@@ -631,9 +631,8 @@ public class MascotGenericFile extends SpectrumFileAncestor {
         // also write them in this header section.
         if (this.iExtraEmbeddedParameters != null) {
             if (!iExtraEmbeddedParameters.isEmpty()) {
-                Iterator iter = iExtraEmbeddedParameters.keySet().iterator();
-                while (iter.hasNext()) {
-                    String aKey = (String) iter.next();
+                for (Object o : iExtraEmbeddedParameters.keySet()) {
+                    String aKey = (String) o;
                     String aValue = (String) iExtraEmbeddedParameters.get(aKey);
                     bw.write(aKey + "=" + aValue + "\n");
                 }
@@ -643,17 +642,16 @@ public class MascotGenericFile extends SpectrumFileAncestor {
         bw.write("\n");
         // Next up the ions themselves.
         SortedSet ss = new TreeSet(this.getPeaks().keySet());
-        Iterator it = ss.iterator();
-        while (it.hasNext()) {
-            Double tempKey = (Double) it.next();
-            BigDecimal lDouble = new BigDecimal(tempKey.doubleValue()).setScale(4, BigDecimal.ROUND_HALF_UP);
+        for (Object s : ss) {
+            Double tempKey = (Double) s;
+            BigDecimal lDouble = new BigDecimal(tempKey).setScale(4, BigDecimal.ROUND_HALF_UP);
             // We need to check whether a charge is known for this peak.
             String charge = "";
             if (iCharges.containsKey(tempKey)) {
-                int chargeState = ((Integer) iCharges.get(tempKey)).intValue();
+                int chargeState = (Integer) iCharges.get(tempKey);
                 charge = "\t" + this.processCharge(chargeState);
             }
-            bw.write(lDouble.toString() + " " + new BigDecimal(((Double) this.iPeaks.get(tempKey)).doubleValue()).setScale(4, BigDecimal.ROUND_HALF_UP).toString() + charge + "\n");
+            bw.write(lDouble.toString() + " " + new BigDecimal((Double) this.iPeaks.get(tempKey)).setScale(4, BigDecimal.ROUND_HALF_UP).toString() + charge + "\n");
         }
 
         bw.write(IONS_END);

@@ -79,8 +79,6 @@ public class Playground {
                 }
             }
 
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Playground.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Playground.class.getName()).log(Level.SEVERE, null, ex);
         } finally {

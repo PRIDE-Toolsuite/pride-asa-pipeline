@@ -212,138 +212,117 @@ public class ModificationsController {
         bindingGroup.bind();
 
         //add listeners
-        modificationsConfigDialog.getModifcationsTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent lse) {
-                if (!lse.getValueIsAdjusting()) {
-                    if (modificationsConfigDialog.getModifcationsTable().getSelectedRow() != -1 && !modificationsBindingList.isEmpty()) {
-                        Modification selectedModification = modificationsBindingList.get(modificationsConfigDialog.getModifcationsTable().getSelectedRow());
-                        affectedAminoAcidsBindingList.clear();
-                        affectedAminoAcidsBindingList.addAll(selectedModification.getAffectedAminoAcids());
+        modificationsConfigDialog.getModifcationsTable().getSelectionModel().addListSelectionListener(lse -> {
+            if (!lse.getValueIsAdjusting()) {
+                if (modificationsConfigDialog.getModifcationsTable().getSelectedRow() != -1 && !modificationsBindingList.isEmpty()) {
+                    Modification selectedModification = modificationsBindingList.get(modificationsConfigDialog.getModifcationsTable().getSelectedRow());
+                    affectedAminoAcidsBindingList.clear();
+                    affectedAminoAcidsBindingList.addAll(selectedModification.getAffectedAminoAcids());
 
-                        aminoAcidsBindingList.clear();
-                        for (AminoAcid aminoAcid : AminoAcid.values()) {
-                            if (!selectedModification.getAffectedAminoAcids().contains(aminoAcid)) {
-                                aminoAcidsBindingList.add(aminoAcid);
-                            }
+                    aminoAcidsBindingList.clear();
+                    for (AminoAcid aminoAcid : AminoAcid.values()) {
+                        if (!selectedModification.getAffectedAminoAcids().contains(aminoAcid)) {
+                            aminoAcidsBindingList.add(aminoAcid);
                         }
-
-                        //disable remove button if there's only one affected amino acid
-                        changeRemoveAminoAcidButtonState(selectedModification);
                     }
+
+                    //disable remove button if there's only one affected amino acid
+                    changeRemoveAminoAcidButtonState(selectedModification);
                 }
             }
         });
 
-        modificationsConfigDialog.getAddAminoAcidButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                if (modificationsConfigDialog.getModifcationsTable().getSelectedRow() != -1) {
-                    List<AminoAcid> selectedValues = modificationsConfigDialog.getAminoAcidsList().getSelectedValuesList();
+        modificationsConfigDialog.getAddAminoAcidButton().addActionListener(ae -> {
+            if (modificationsConfigDialog.getModifcationsTable().getSelectedRow() != -1) {
+                List<AminoAcid> selectedValues = modificationsConfigDialog.getAminoAcidsList().getSelectedValuesList();
 
-                    Modification selectedModification = modificationsBindingList.get(modificationsConfigDialog.getModifcationsTable().getSelectedRow());
+                Modification selectedModification = modificationsBindingList.get(modificationsConfigDialog.getModifcationsTable().getSelectedRow());
 
-                    for (AminoAcid aminoAcid : selectedValues) {
-                        affectedAminoAcidsBindingList.add(aminoAcid);
-                        Collections.sort(affectedAminoAcidsBindingList);
-                        aminoAcidsBindingList.remove(aminoAcid);
-                        selectedModification.getAffectedAminoAcids().add(aminoAcid);
+                for (AminoAcid aminoAcid : selectedValues) {
+                    affectedAminoAcidsBindingList.add(aminoAcid);
+                    Collections.sort(affectedAminoAcidsBindingList);
+                    aminoAcidsBindingList.remove(aminoAcid);
+                    selectedModification.getAffectedAminoAcids().add(aminoAcid);
 
-                        //enable remove button if there's more then one affected amino acid
-                        changeRemoveAminoAcidButtonState(selectedModification);
+                    //enable remove button if there's more then one affected amino acid
+                    changeRemoveAminoAcidButtonState(selectedModification);
 
-                        modificationsConfigDialog.getModifcationsTable().updateUI();
-                    }
+                    modificationsConfigDialog.getModifcationsTable().updateUI();
                 }
             }
         });
 
-        modificationsConfigDialog.getRemoveAminoAcidButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                if (modificationsConfigDialog.getModifcationsTable().getSelectedRow() != -1) {
-                    List<AminoAcid> selectedValues = modificationsConfigDialog.getAffectedAminoAcidsList().getSelectedValuesList();
+        modificationsConfigDialog.getRemoveAminoAcidButton().addActionListener(ae -> {
+            if (modificationsConfigDialog.getModifcationsTable().getSelectedRow() != -1) {
+                List<AminoAcid> selectedValues = modificationsConfigDialog.getAffectedAminoAcidsList().getSelectedValuesList();
 
-                    Modification selectedModification = modificationsBindingList.get(modificationsConfigDialog.getModifcationsTable().getSelectedRow());
+                Modification selectedModification = modificationsBindingList.get(modificationsConfigDialog.getModifcationsTable().getSelectedRow());
 
-                    for (AminoAcid aminoAcid : selectedValues) {
-                        aminoAcidsBindingList.add(aminoAcid);
-                        affectedAminoAcidsBindingList.remove(aminoAcid);
-                        Collections.sort(aminoAcidsBindingList);
-                        selectedModification.getAffectedAminoAcids().remove(aminoAcid);
+                for (AminoAcid aminoAcid : selectedValues) {
+                    aminoAcidsBindingList.add(aminoAcid);
+                    affectedAminoAcidsBindingList.remove(aminoAcid);
+                    Collections.sort(aminoAcidsBindingList);
+                    selectedModification.getAffectedAminoAcids().remove(aminoAcid);
 
-                        //disable remove button if there's only one affected amino acid
-                        changeRemoveAminoAcidButtonState(selectedModification);
+                    //disable remove button if there's only one affected amino acid
+                    changeRemoveAminoAcidButtonState(selectedModification);
 
-                        modificationsConfigDialog.getModifcationsTable().updateUI();
-                    }
+                    modificationsConfigDialog.getModifcationsTable().updateUI();
                 }
             }
         });
 
-        modificationsConfigDialog.getAddModificationButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                Set<AminoAcid> affectedAminoAcids = new HashSet<>();
-                affectedAminoAcids.add(AminoAcid.Ala);
-                modificationsBindingList.add(new Modification("mod" + modificationsBindingList.size(), 0.0, 0.0, Modification.Location.NON_TERMINAL, affectedAminoAcids, "accession", "accessionValue"));
-                modificationsConfigDialog.getModifcationsTable().getSelectionModel().setSelectionInterval(modificationsBindingList.size() - 1, modificationsBindingList.size() - 1);
-            }
+        modificationsConfigDialog.getAddModificationButton().addActionListener(ae -> {
+            Set<AminoAcid> affectedAminoAcids = new HashSet<>();
+            affectedAminoAcids.add(AminoAcid.Ala);
+            modificationsBindingList.add(new Modification("mod" + modificationsBindingList.size(), 0.0, 0.0, Modification.Location.NON_TERMINAL, affectedAminoAcids, "accession", "accessionValue"));
+            modificationsConfigDialog.getModifcationsTable().getSelectionModel().setSelectionInterval(modificationsBindingList.size() - 1, modificationsBindingList.size() - 1);
         });
 
-        modificationsConfigDialog.getRemoveModificationButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                if (!modificationsBindingList.isEmpty() && modificationsConfigDialog.getModifcationsTable().getSelectedRow() != -1) {
-                    modificationsBindingList.remove(modificationsConfigDialog.getModifcationsTable().getSelectedRow());
-                    if (!modificationsBindingList.isEmpty()) {
-                        modificationsConfigDialog.getModifcationsTable().getSelectionModel().setSelectionInterval(0, 0);
-                    }
+        modificationsConfigDialog.getRemoveModificationButton().addActionListener(ae -> {
+            if (!modificationsBindingList.isEmpty() && modificationsConfigDialog.getModifcationsTable().getSelectedRow() != -1) {
+                modificationsBindingList.remove(modificationsConfigDialog.getModifcationsTable().getSelectedRow());
+                if (!modificationsBindingList.isEmpty()) {
+                    modificationsConfigDialog.getModifcationsTable().getSelectionModel().setSelectionInterval(0, 0);
                 }
             }
         });
 
-        modificationsConfigDialog.getImportButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //in response to the button click, show open dialog 
-                int returnVal = modificationsConfigDialog.getFileChooser().showOpenDialog(modificationsConfigDialog);
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    Resource modificationsImportResource = new FileSystemResource(modificationsConfigDialog.getFileChooser().getSelectedFile());
+        modificationsConfigDialog.getImportButton().addActionListener(e -> {
+            //in response to the button click, show open dialog
+            int returnVal = modificationsConfigDialog.getFileChooser().showOpenDialog(modificationsConfigDialog);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                Resource modificationsImportResource = new FileSystemResource(modificationsConfigDialog.getFileChooser().getSelectedFile());
 
-                    //import modifications and refill the binding list
-                    try {
-                        Set<Modification> importedModifications = modificationService.importPipelineModifications(modificationsImportResource, InputType.PRIDE_ASAP);
+                //import modifications and refill the binding list
+                try {
+                    Set<Modification> importedModifications = modificationService.importPipelineModifications(modificationsImportResource, InputType.PRIDE_ASAP);
 
-                        modificationsBindingList.clear();
-                        modificationsBindingList.addAll(importedModifications);
+                    modificationsBindingList.clear();
+                    modificationsBindingList.addAll(importedModifications);
 
-                        //select first modification
-                        modificationsConfigDialog.getModifcationsTable().getSelectionModel().setSelectionInterval(0, 0);
-                    } catch (JDOMParseException ex) {
-                        LOGGER.error(ex.getMessage(), ex);
-                        mainController.showMessageDialog("Import Unsuccessful", "The modifications file could not be imported. Please check the validity of the file. "
-                                + "\n" + "Error on line " + ex.getLineNumber() + ", message: " + ex.getMessage(), JOptionPane.ERROR_MESSAGE);
-                    } catch (JDOMException ex) {
-                        LOGGER.error(ex.getMessage(), ex);
-                        mainController.showMessageDialog("Import Unsuccessful", "The modifications file could not be imported. Please check the validity of the file. "
-                                + "\n" + "Error message: " + ex.getMessage(), JOptionPane.ERROR_MESSAGE);
-                    }
+                    //select first modification
+                    modificationsConfigDialog.getModifcationsTable().getSelectionModel().setSelectionInterval(0, 0);
+                } catch (JDOMParseException ex) {
+                    LOGGER.error(ex.getMessage(), ex);
+                    mainController.showMessageDialog("Import Unsuccessful", "The modifications file could not be imported. Please check the validity of the file. "
+                            + "\n" + "Error on line " + ex.getLineNumber() + ", message: " + ex.getMessage(), JOptionPane.ERROR_MESSAGE);
+                } catch (JDOMException ex) {
+                    LOGGER.error(ex.getMessage(), ex);
+                    mainController.showMessageDialog("Import Unsuccessful", "The modifications file could not be imported. Please check the validity of the file. "
+                            + "\n" + "Error message: " + ex.getMessage(), JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
-        modificationsConfigDialog.getSaveButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //check if modifications file in resources folder can be found
-                if (ResourceUtils.isExistingFile(PropertiesConfigurationHolder.getInstance().getString("modification.pipeline_modifications_file"))) {
-                    modificationService.savePipelineModifications(modificationsResource, modificationsBindingList);
-                } else {
-                    mainController.showMessageDialog("Save Unsuccessful", "The modifications could not be saved to file. "
-                            + "\n" + "Please check if a \"pride_asap_modifications.xml\" file exists in the \"resources\" folder. "
-                            + "\n" + "The modifications will however be used in the pipeline.", JOptionPane.WARNING_MESSAGE);
-                }
+        modificationsConfigDialog.getSaveButton().addActionListener(e -> {
+            //check if modifications file in resources folder can be found
+            if (ResourceUtils.isExistingFile(PropertiesConfigurationHolder.getInstance().getString("modification.pipeline_modifications_file"))) {
+                modificationService.savePipelineModifications(modificationsResource, modificationsBindingList);
+            } else {
+                mainController.showMessageDialog("Save Unsuccessful", "The modifications could not be saved to file. "
+                        + "\n" + "Please check if a \"pride_asap_modifications.xml\" file exists in the \"resources\" folder. "
+                        + "\n" + "The modifications will however be used in the pipeline.", JOptionPane.WARNING_MESSAGE);
             }
         });
     }

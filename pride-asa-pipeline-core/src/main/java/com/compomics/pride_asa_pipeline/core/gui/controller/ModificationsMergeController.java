@@ -126,55 +126,43 @@ public class ModificationsMergeController extends WindowAdapter {
         bindingGroup.bind();
 
         //add listeners
-        modificationsMergeDialog.getAddPrideModificationButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selectedIndex = modificationsMergeDialog.getPrideModificationsList().getSelectedIndex();
-                if (selectedIndex != -1) {
-                    Modification selectedModification = prideModificationsBindingList.get(selectedIndex);
-                    if (!pipelineModificationsBindingList.contains(selectedModification)) {
-                        addedPrideModifications.add(selectedModification);
-                        pipelineModificationsBindingList.add(selectedModification);
-                        Collections.sort(pipelineModificationsBindingList);
-                        prideModificationsBindingList.remove(selectedModification);
-                    }
+        modificationsMergeDialog.getAddPrideModificationButton().addActionListener(e -> {
+            int selectedIndex = modificationsMergeDialog.getPrideModificationsList().getSelectedIndex();
+            if (selectedIndex != -1) {
+                Modification selectedModification = prideModificationsBindingList.get(selectedIndex);
+                if (!pipelineModificationsBindingList.contains(selectedModification)) {
+                    addedPrideModifications.add(selectedModification);
+                    pipelineModificationsBindingList.add(selectedModification);
+                    Collections.sort(pipelineModificationsBindingList);
+                    prideModificationsBindingList.remove(selectedModification);
                 }
             }
         });
 
-        modificationsMergeDialog.getRemovePrideModificationButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selectedIndex = modificationsMergeDialog.getPipelineModificationsList().getSelectedIndex();
-                if (selectedIndex != -1) {
-                    Modification selectedModification = pipelineModificationsBindingList.get(selectedIndex);
-                    if (addedPrideModifications.contains(selectedModification)) {
-                        addedPrideModifications.remove(selectedModification);
-                        prideModificationsBindingList.add(selectedModification);
-                        Collections.sort(prideModificationsBindingList);
-                        pipelineModificationsBindingList.remove(selectedModification);
-                    }
+        modificationsMergeDialog.getRemovePrideModificationButton().addActionListener(e -> {
+            int selectedIndex = modificationsMergeDialog.getPipelineModificationsList().getSelectedIndex();
+            if (selectedIndex != -1) {
+                Modification selectedModification = pipelineModificationsBindingList.get(selectedIndex);
+                if (addedPrideModifications.contains(selectedModification)) {
+                    addedPrideModifications.remove(selectedModification);
+                    prideModificationsBindingList.add(selectedModification);
+                    Collections.sort(prideModificationsBindingList);
+                    pipelineModificationsBindingList.remove(selectedModification);
                 }
             }
         });
 
-        modificationsMergeDialog.getCancelButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                modificationsMergeDialog.setVisible(Boolean.FALSE);
-                experimentSelectionController.onAnnotationCanceled();
-            }
+        modificationsMergeDialog.getCancelButton().addActionListener(e -> {
+            modificationsMergeDialog.setVisible(Boolean.FALSE);
+            experimentSelectionController.onAnnotationCanceled();
         });
 
-        modificationsMergeDialog.getProceedButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //add "added" pride modifications to the ModificationHolder
-                experimentSelectionController.getMainController().getCurrentSpectrumAnnotator().getModificationHolder().addModifications(addedPrideModifications);                
-                
-                modificationsMergeDialog.setVisible(Boolean.FALSE);
-                experimentSelectionController.onModificationsLoaded();
-            }
+        modificationsMergeDialog.getProceedButton().addActionListener(e -> {
+            //add "added" pride modifications to the ModificationHolder
+            experimentSelectionController.getMainController().getCurrentSpectrumAnnotator().getModificationHolder().addModifications(addedPrideModifications);
+
+            modificationsMergeDialog.setVisible(Boolean.FALSE);
+            experimentSelectionController.onModificationsLoaded();
         });
     }
 

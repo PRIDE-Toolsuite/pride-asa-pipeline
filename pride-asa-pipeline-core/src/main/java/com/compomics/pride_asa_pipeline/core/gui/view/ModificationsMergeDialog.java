@@ -226,11 +226,7 @@ public class ModificationsMergeDialog extends javax.swing.JDialog {
         addPrideModificationButton.setMaximumSize(new java.awt.Dimension(80, 25));
         addPrideModificationButton.setMinimumSize(new java.awt.Dimension(80, 25));
         addPrideModificationButton.setPreferredSize(new java.awt.Dimension(80, 25));
-        addPrideModificationButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addPrideModificationButtonActionPerformed(evt);
-            }
-        });
+        addPrideModificationButton.addActionListener(this::addPrideModificationButtonActionPerformed);
 
         removeModificationButton.setText("<<");
         removeModificationButton.setToolTipText("Only pride modifications can be removed from the pipeline modifications.");

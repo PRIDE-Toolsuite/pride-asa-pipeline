@@ -78,36 +78,28 @@ public class PipelineParamsController {
         bindingGroup.bind();
 
         //add listeners
-        pipelineConfigDialog.getSaveButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    PropertiesConfigurationHolder.getInstance().save();
-                    mainController.showMessageDialog("Save Successful", "The pipeline parameters were saved successfully.", JOptionPane.INFORMATION_MESSAGE);
-                } catch (ConfigurationException ex) {
-                    LOGGER.error(ex.getMessage(), ex);
-                    mainController.showMessageDialog("Save Unsuccessful", "The pipeline settings could not be saved to file. "
-                            + "\n" + "Please check if a \"pride_asa_pipeline.properties\" file exists in the \"resources\" folder. "
-                            + "\n" + "The settings will however be used in the pipeline.", JOptionPane.WARNING_MESSAGE);
-                }
+        pipelineConfigDialog.getSaveButton().addActionListener(e -> {
+            try {
+                PropertiesConfigurationHolder.getInstance().save();
+                mainController.showMessageDialog("Save Successful", "The pipeline parameters were saved successfully.", JOptionPane.INFORMATION_MESSAGE);
+            } catch (ConfigurationException ex) {
+                LOGGER.error(ex.getMessage(), ex);
+                mainController.showMessageDialog("Save Unsuccessful", "The pipeline settings could not be saved to file. "
+                        + "\n" + "Please check if a \"pride_asa_pipeline.properties\" file exists in the \"resources\" folder. "
+                        + "\n" + "The settings will however be used in the pipeline.", JOptionPane.WARNING_MESSAGE);
             }
         });
 
-        pipelineConfigDialog.getResetButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    //clear holder and reload default properties
-                    PropertiesConfigurationHolder.getInstance().clear();
-                    PropertiesConfigurationHolder.getInstance().load(new ClassPathResource("resources/pride_asa_pipeline.properties").getInputStream());
-                    //reset binding list
-                    propertyGuiWrapperBindingList.clear();
-                    initPropertyGuiWrappersBindingList();
-                } catch (ConfigurationException ex) {
-                    LOGGER.error(ex.getMessage(), ex);
-                } catch (IOException ex) {
-                    LOGGER.error(ex.getMessage(), ex);
-                }
+        pipelineConfigDialog.getResetButton().addActionListener(e -> {
+            try {
+                //clear holder and reload default properties
+                PropertiesConfigurationHolder.getInstance().clear();
+                PropertiesConfigurationHolder.getInstance().load(new ClassPathResource("resources/pride_asa_pipeline.properties").getInputStream());
+                //reset binding list
+                propertyGuiWrapperBindingList.clear();
+                initPropertyGuiWrappersBindingList();
+            } catch (ConfigurationException | IOException ex) {
+                LOGGER.error(ex.getMessage(), ex);
             }
         });
     }

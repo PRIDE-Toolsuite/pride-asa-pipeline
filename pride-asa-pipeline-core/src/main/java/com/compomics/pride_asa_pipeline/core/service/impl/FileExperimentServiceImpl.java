@@ -104,9 +104,7 @@ public class FileExperimentServiceImpl extends ExperimentServiceImpl implements 
     public Set<String> getProteinAccessions() {
         Set<String> proteinAccessions = new HashSet<>();
         List<String> proteinAccessionList = experimentRepository.getProteinAccessions(assayIdentifier);
-        for (String proteinAccession : proteinAccessionList) {
-            proteinAccessions.add(proteinAccession);
-        }
+        proteinAccessions.addAll(proteinAccessionList);
         return proteinAccessions;
     }
 

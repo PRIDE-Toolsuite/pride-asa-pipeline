@@ -50,15 +50,11 @@ public class PipelineProgressController extends WindowAdapter {
         GuiUtils.centerDialogOnFrame(experimentSelectionController.getMainController().getMainFrame(), pipelineProgressDialog);
         progressFinished = Boolean.FALSE;
 
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    pipelineProgressDialog.setVisible(true);
-                } catch (IndexOutOfBoundsException e) {
-                    // ignore
-                }
+        new Thread(() -> {
+            try {
+                pipelineProgressDialog.setVisible(true);
+            } catch (IndexOutOfBoundsException e) {
+                // ignore
             }
         }, "ProgressDialog").start();
     }

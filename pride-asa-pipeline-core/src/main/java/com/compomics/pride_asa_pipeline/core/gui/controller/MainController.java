@@ -283,8 +283,6 @@ public class MainController implements ActionListener {
             }
         } catch (UnknownHostException e) {
             // ignore exception
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -58,9 +58,7 @@ public class PipelineModificationServiceImpl implements PipelineModificationServ
         modificationMarshaller.marshall(modificationsResource, newPipelineModifications);
         //replace the current pipeline modifications
         pipelineModifications.clear();
-        for (Modification modification : newPipelineModifications) {
-            pipelineModifications.add(modification);
-        }
+        pipelineModifications.addAll(newPipelineModifications);
     }
 
     @Override

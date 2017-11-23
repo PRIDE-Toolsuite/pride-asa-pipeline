@@ -97,8 +97,6 @@ public class DbCommandLineRunner {
             while ((line = br.readLine()) != null) {
                 experimentAccessions.add(line);
             }
-        } catch (FileNotFoundException e) {
-            LOGGER.error(e.getMessage(), e);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         }

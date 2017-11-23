@@ -81,9 +81,7 @@ public abstract class ModificationServiceImpl1 implements ModificationService {
         for (Identification identification : identifications) {
             Peptide peptide = identification.getPeptide();
             nTermimalAminoAcidHashMultiset.add(peptide.getSequence().getAA(0));
-            for (AminoAcid aminoAcid : peptide.getSequence().getAASequence()) {
-                nonTermimalAminoAcidHashMultiset.add(aminoAcid);
-            }
+            nonTermimalAminoAcidHashMultiset.addAll(peptide.getSequence().getAASequence());
             cTermimalAminoAcidHashMultiset.add(peptide.getSequence().getAA(peptide.getSequence().length() - 1));
         }
 

@@ -79,7 +79,7 @@ public class WSExperimentRepository implements ExperimentRepository {
             for (PsmDetail aDetail : psmByAssay.getList()) {
                 try {
                     AminoAcidSequence aaSequence = new AminoAcidSequence(aDetail.getSequence());
-                    Peptide peptide = new Peptide(aDetail.getCharge(), aDetail.getExperimentalMZ().doubleValue(), aaSequence);
+                    Peptide peptide = new Peptide(aDetail.getCharge(), aDetail.getExperimentalMZ(), aaSequence);
                     Identification ident = new Identification(peptide, aDetail.getExperimentalMZ().toString(), aDetail.getReportedID(), aDetail.getSpectrumID());
                     identifications.add(ident);
                 } catch (UnknownAAException ex) {

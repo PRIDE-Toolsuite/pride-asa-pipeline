@@ -43,25 +43,19 @@ public class ModificationHolder {
             case NON_TERMINAL:
                 //add this modification to all non-terminal amino acids that could be affected
                 for (AminoAcid aa : modification.getAffectedAminoAcids()) {
-                    if (nonTerminalMods.get(aa) == null) {
-                        nonTerminalMods.put(aa, new HashSet<Modification>());
-                    }
+                    nonTerminalMods.computeIfAbsent(aa, k -> new HashSet<Modification>());
                     nonTerminalMods.get(aa).add(modification);
                 }   break;
             case N_TERMINAL:
                 //add this modification to all N-terminal amino acids that could be affected
                 for (AminoAcid aa : modification.getAffectedAminoAcids()) {
-                    if (nTerminalMods.get(aa) == null) {
-                        nTerminalMods.put(aa, new HashSet<Modification>());
-                    }
+                    nTerminalMods.computeIfAbsent(aa, k -> new HashSet<Modification>());
                     nTerminalMods.get(aa).add(modification);
                 }   break;
             case C_TERMINAL:
                 //add this modification to all C-terminal amino acids that could be affected
                 for (AminoAcid aa : modification.getAffectedAminoAcids()) {
-                    if (cTerminalMods.get(aa) == null) {
-                        cTerminalMods.put(aa, new HashSet<Modification>());
-                    }
+                    cTerminalMods.computeIfAbsent(aa, k -> new HashSet<Modification>());
                     cTerminalMods.get(aa).add(modification);
                 }   break;
             default:

@@ -21,9 +21,7 @@ public class PropertiesConfigurationHolder extends PropertiesConfiguration {
             Resource propertiesResource = ResourceUtils.getResourceByRelativePath("resources/pride-asa-pipeline-core.properties");
             ourInstance = new PropertiesConfigurationHolder(propertiesResource);
             
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        } catch (ConfigurationException e) {
+        } catch (IOException | ConfigurationException e) {
             LOGGER.error(e.getMessage(), e);
         }
     }

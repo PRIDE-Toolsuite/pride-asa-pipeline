@@ -63,13 +63,9 @@ public class PrideAsaPipelineStarter {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            //LOGGER.error(ex.getMessage(), ex);
-        } catch (InstantiationException ex) {
+        } catch (ClassNotFoundException | InstantiationException | javax.swing.UnsupportedLookAndFeelException ex) {
             //LOGGER.error(ex.getMessage(), ex);
         } catch (IllegalAccessException ex) {
-            //LOGGER.error(ex.getMessage(), ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             //LOGGER.error(ex.getMessage(), ex);
         }
         //</editor-fold>
@@ -77,20 +73,17 @@ public class PrideAsaPipelineStarter {
         /*
          * Create and display the form
          */
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    //set GUI application context
-                    ApplicationContextProvider.getInstance().setApplicationContext(new ClassPathXmlApplicationContext("guiSpringXMLConfig.xml"));
-                    ApplicationContext applicationContext = ApplicationContextProvider.getInstance().getApplicationContext();
-                    MainController mainController = (MainController) applicationContext.getBean("mainController");
-                    mainController.init();
-                } catch (CannotGetJdbcConnectionException ex) {
-                    JOptionPane.showMessageDialog(null, "Cannot establish a connection to the PRIDE public database, the application will not start."
-                            + "\n" + "Make sure you have an active internet connection and/or check your firewall settings.", "Error", JOptionPane.ERROR_MESSAGE);
-                    System.exit(0);
-                }
+        EventQueue.invokeLater(() -> {
+            try {
+                //set GUI application context
+                ApplicationContextProvider.getInstance().setApplicationContext(new ClassPathXmlApplicationContext("guiSpringXMLConfig.xml"));
+                ApplicationContext applicationContext = ApplicationContextProvider.getInstance().getApplicationContext();
+                MainController mainController = (MainController) applicationContext.getBean("mainController");
+                mainController.init();
+            } catch (CannotGetJdbcConnectionException ex) {
+                JOptionPane.showMessageDialog(null, "Cannot establish a connection to the PRIDE public database, the application will not start."
+                        + "\n" + "Make sure you have an active internet connection and/or check your firewall settings.", "Error", JOptionPane.ERROR_MESSAGE);
+                System.exit(0);
             }
         });
     }

@@ -102,9 +102,7 @@ public class MassDeltaExplainerImpl implements MassDeltaExplainer {
                     combinations = modificationCombinationSolver.findModificationCombinations(peptide, modificationCombinationSizeLimit, precursorMassDelta, deviation);
                     //add all newly found combinations (if any) to the set of all modifications for this peptide
                     if (combinations != null && combinations.size() > 0) {
-                        if (possibleExplainedIdentifications.get(identification) == null) {
-                            possibleExplainedIdentifications.put(identification, new HashSet<ModificationCombination>());
-                        }
+                        possibleExplainedIdentifications.computeIfAbsent(identification, k -> new HashSet<ModificationCombination>());
                         possibleExplainedIdentifications.get(identification).addAll(combinations);
                     } else {
                         //there is a mass delta the needs to be explained, but

@@ -223,14 +223,10 @@ public class MGFExtractor {
     }
 
     private Spectrum controlledReadNextSpectrum(String spectrumID, JMzReader jmzReader, long timeout) throws TimeoutException {
-        ExecutorService service = Executors.newFixedThreadPool(1, new ThreadFactory() {
-
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r);
-                thread.setDaemon(true);
-                return thread;
-            }
+        ExecutorService service = Executors.newFixedThreadPool(1, r -> {
+            Thread thread = new Thread(r);
+            thread.setDaemon(true);
+            return thread;
         });
         SpectrumRetriever retriever = new SpectrumRetriever(spectrumID, jmzReader);
         Future<Spectrum> futureResult = service.submit(retriever);

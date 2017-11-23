@@ -150,8 +150,8 @@ public class MassShiftCalculator {
         //the optimal shift is found where the maximal correlation is
         Complex[] corr = calculateXCorr(first, second);
         DescriptiveStatistics stat = new DescriptiveStatistics();
-        for (int i = 0; i < corr.length; i++) {
-            stat.addValue(corr[i].getReal());
+        for (Complex aCorr : corr) {
+            stat.addValue(aCorr.getReal());
         }
         System.out.println(stat);
         return stat;

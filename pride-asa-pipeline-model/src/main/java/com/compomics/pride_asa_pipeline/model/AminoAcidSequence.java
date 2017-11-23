@@ -54,7 +54,7 @@ public class AminoAcidSequence {
             if (aa.mass() == 0D) {
                 allMassesKnown = false;
                 if (tmp == null) {
-                    tmp = new ArrayList<AminoAcid>();
+                    tmp = new ArrayList<>();
                 }
                 tmp.add(aa);
             }
@@ -90,7 +90,7 @@ public class AminoAcidSequence {
      * @throws UnknownAAException 
      */
     public static List<AminoAcid> toAASequence(String sequence) throws UnknownAAException {
-        List<AminoAcid> aaSequence = new ArrayList<AminoAcid>();
+        List<AminoAcid> aaSequence = new ArrayList<>();
         for (char c : sequence.toCharArray()) {
             if (AminoAcid.containsAA(c)) {
                 aaSequence.add(AminoAcid.getAA(c));

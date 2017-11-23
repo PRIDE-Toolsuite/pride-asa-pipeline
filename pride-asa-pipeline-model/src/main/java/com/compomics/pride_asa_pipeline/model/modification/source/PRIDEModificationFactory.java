@@ -318,9 +318,7 @@ public class PRIDEModificationFactory {
         LinkedHashMap<String, PRIDEModification> modificationMap1 = factory.getModificationMap();
         //sort them according to frequency (the default comparator)
         TreeSet<PRIDEModification> mods = new TreeSet<>();
-        for (PRIDEModification aMod : modificationMap1.values()) {
-            mods.add(aMod);
-        }
+        mods.addAll(modificationMap1.values());
         //save them to a file
         JsonMarshaller marshaller = new JsonMarshaller();
         marshaller.saveObjectToJson(mods, jsonFile);

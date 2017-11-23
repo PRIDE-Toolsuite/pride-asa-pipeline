@@ -78,9 +78,7 @@ public class DbExperimentServiceImpl extends ExperimentServiceImpl implements Db
     public Set<String> getProteinAccessions(String experimentAccession) {
         Set<String> proteinAccessions = new HashSet<String>();
         List<String> proteinAccessionList = experimentRepository.getProteinAccessions(experimentAccession);
-        for (String proteinAccession : proteinAccessionList) {
-            proteinAccessions.add(proteinAccession);
-        }
+        proteinAccessions.addAll(proteinAccessionList);
         return proteinAccessions;
     }
 
@@ -106,8 +104,6 @@ public class DbExperimentServiceImpl extends ExperimentServiceImpl implements Db
 
             outputStream = new BufferedOutputStream(new FileOutputStream(mgfFile));
             writeCachedSpectra(outputStream, experimentAccession);
-        } catch (FileNotFoundException e) {
-            LOGGER.error(e.getMessage(), e);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
