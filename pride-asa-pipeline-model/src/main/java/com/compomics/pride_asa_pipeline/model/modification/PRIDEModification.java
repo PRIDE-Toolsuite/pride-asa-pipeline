@@ -1,16 +1,20 @@
 package com.compomics.pride_asa_pipeline.model.modification;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import uk.ac.ebi.pridemod.model.PTM;
-import uk.ac.ebi.pridemod.model.Specificity;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import uk.ac.ebi.pride.utilities.pridemod.model.PTM;
+import uk.ac.ebi.pride.utilities.pridemod.model.Specificity;
 
 /**
  * Date: 11-Jan-2008
  *
  * @since 0.1
  */
-public class PRIDEModification implements PTM, Comparable<PRIDEModification> {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class PRIDEModification implements PTM, Serializable, Comparable<PRIDEModification> {
 
     private int frequency;
     private String accession;
@@ -21,7 +25,7 @@ public class PRIDEModification implements PTM, Comparable<PRIDEModification> {
     private String formula;
     private List<Specificity> specificityCollection;
 
-    public PRIDEModification(uk.ac.ebi.pridemod.model.PTM ptm, int frequency) {
+    public PRIDEModification(PTM ptm, int frequency) {
         this.accession = ptm.getAccession();
         this.name = ptm.getName();
         this.aveDeltaMass = ptm.getAveDeltaMass();
@@ -32,9 +36,8 @@ public class PRIDEModification implements PTM, Comparable<PRIDEModification> {
         this.specificityCollection = ptm.getSpecificityCollection();
     }
 
-    public PRIDEModification() {
-    }
-   
+//    public PRIDEModification() {}
+//
     
     @Override
     public int compareTo(PRIDEModification o) {
@@ -111,6 +114,16 @@ public class PRIDEModification implements PTM, Comparable<PRIDEModification> {
     @Override
     public String getFormula() {
         return formula;
+    }
+
+    @Override
+    public String getCvLabel() {
+        return name;
+    }
+
+    @Override
+    public String getShortName() {
+        return name;
     }
 
     public int getFrequency() {

@@ -142,6 +142,14 @@ public class WebServiceParameterInference {
 
         param.setPtmSettings(ptmSettings);
 
+        // If not enzyme is provided take the default. We rae taking 2 miss-cleavages here by default.
+        if(! param.getDigestionPreferences().hasEnzymes()){
+            DigestionPreferences digest = param.getDigestionPreferences();
+            String defaultEnzyme = "Trypsin";
+            digest.addEnzyme(EnzymeFactory.getDefault().getEnzyme(defaultEnzyme));
+            digest.setnMissedCleavages(defaultEnzyme, 2);
+            param.setDigestionPreferences(digest);
+        }
         idParam.setSearchParameters(param);
 
         System.out.println(idParam.getSearchParameters().toString());

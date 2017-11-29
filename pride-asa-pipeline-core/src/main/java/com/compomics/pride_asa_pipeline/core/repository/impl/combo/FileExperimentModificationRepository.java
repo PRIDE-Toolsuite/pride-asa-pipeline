@@ -5,7 +5,6 @@ import com.compomics.pride_asa_pipeline.model.modification.impl.AsapModification
 import com.compomics.pride_asa_pipeline.model.modification.source.PRIDEModificationFactory;
 import com.compomics.pride_asa_pipeline.core.repository.ModificationRepository;
 import com.compomics.pride_asa_pipeline.core.repository.impl.file.FileExperimentRepository;
-import com.compomics.pride_asa_pipeline.core.util.IdentificationQueue;
 import com.compomics.pride_asa_pipeline.model.AminoAcidSequence;
 import com.compomics.pride_asa_pipeline.model.Identification;
 import com.compomics.pride_asa_pipeline.model.Modification;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import org.apache.log4j.Logger;

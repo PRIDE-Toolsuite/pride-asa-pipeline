@@ -37,6 +37,9 @@ public class FileParameterExtractor {
     private Boolean processMGF = false;
 
     private Boolean processIDs = true;
+
+    private IParametersRefinery parametersRefinery = null;
+    
     /**
      * The Logger instance
      */
@@ -47,24 +50,27 @@ public class FileParameterExtractor {
     private FileExperimentModificationRepository modificationRepository;
     private AnalyzerData analyzerData;
 
-    public FileParameterExtractor(File outputFolder, Boolean processMGF, Boolean processIDs) throws IOException {
+    public FileParameterExtractor(File outputFolder, Boolean processMGF, Boolean processIDs, IParametersRefinery refinery) throws IOException {
         this.outputFolder = outputFolder;
         this.processMGF = processMGF;
         this.analyzerData = AnalyzerData.getAnalyzerDataByAnalyzerType("");
         this.processIDs = processIDs;
+        this.parametersRefinery = refinery;
         init();
     }
 
-    public FileParameterExtractor(File outputFolder, AnalyzerData analyzerData) throws IOException {
+    public FileParameterExtractor(File outputFolder, AnalyzerData analyzerData, IParametersRefinery refinery) throws IOException {
         this.outputFolder = outputFolder;
         this.analyzerData = analyzerData;
+        this.parametersRefinery = refinery;
         init();
     }
 
-    public FileParameterExtractor(String outputFile, Boolean processMGF, Boolean processIDs) {
+    public FileParameterExtractor(String outputFile, Boolean processMGF, Boolean processIDs, IParametersRefinery refinery) {
         this.outputFile = outputFile;
         this.processMGF = processMGF;
         this.processIDs = processIDs;
+        this.parametersRefinery = refinery;
         this.analyzerData = AnalyzerData.getAnalyzerDataByAnalyzerType("");
         init();
     }
@@ -84,9 +90,15 @@ public class FileParameterExtractor {
         ParameterExtractor extractor = new ParameterExtractor(assay, analyzerData, modificationRepository);
         //extractor.setExperimentRepository(experimentRepository);
         IdentificationParameters parameters = extractor.getParameters();
+
+        //Refine the parameters in case something is wrong in the file.
+        if(parametersRefinery != null)
+            parameters = parametersRefinery.refineIdentificationParameters(parameters);
+
         if(outputFile != null){
-            extractor.printReports(outputFile + ".report.out");
             IdentificationParameters.saveIdentificationParameters(parameters, new File(outputFile));
+            //Todo: We have decided here to do nto print the output resume when a file is specified
+            //extractor.printReports(outputFile + ".report.out");
         } else{
             extractor.printReports(outputFolder);
             IdentificationParameters.saveIdentificationParameters(parameters, new File(outputFolder, ".par"));

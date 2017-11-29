@@ -1,12 +1,13 @@
 package com.compomics.pride_asa_pipeline.model.modification.impl;
 
 import com.compomics.pride_asa_pipeline.model.modification.ModificationAdapter;
-import com.compomics.pride_asa_pipeline.model.modification.PRIDEModification;
 import com.compomics.pride_asa_pipeline.model.AminoAcid;
 import com.compomics.pride_asa_pipeline.model.Modification;
 import com.compomics.pride_asa_pipeline.model.Modification.Location;
 import java.util.HashSet;
-import uk.ac.ebi.pridemod.model.Specificity;
+
+import uk.ac.ebi.pride.utilities.pridemod.model.PTM;
+import uk.ac.ebi.pride.utilities.pridemod.model.Specificity;
 
 /**
  *
@@ -17,7 +18,7 @@ public class AsapModificationAdapter implements ModificationAdapter<Modification
     private HashSet<AminoAcid> affectedAminoAcid;
 
     @Override
-    public Modification convertModification(PRIDEModification mod) {
+    public Modification convertModification(PTM mod) {
         try{
         Double averageIsotopicMass = mod.getAveDeltaMass();
         Double monoIsotopicMass = mod.getMonoDeltaMass();
@@ -47,7 +48,7 @@ public class AsapModificationAdapter implements ModificationAdapter<Modification
     }
     }
 
-    private Location getLocation(uk.ac.ebi.pridemod.model.PTM ptm) {
+    private Location getLocation(uk.ac.ebi.pride.utilities.pridemod.model.PTM ptm) {
         HashSet<Location> affectedLocations = new HashSet<>();
         affectedAminoAcid = new HashSet<>();
         for (Specificity specificity : ptm.getSpecificityCollection()) {

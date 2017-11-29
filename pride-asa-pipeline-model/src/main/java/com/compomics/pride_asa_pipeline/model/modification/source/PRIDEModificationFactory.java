@@ -33,8 +33,9 @@ import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
-import uk.ac.ebi.pridemod.ModReader;
-import uk.ac.ebi.pridemod.model.UniModPTM;
+import uk.ac.ebi.pride.utilities.pridemod.ModReader;
+import uk.ac.ebi.pride.utilities.pridemod.model.PTM;
+import uk.ac.ebi.pride.utilities.pridemod.model.UniModPTM;
 
 /**
  *
@@ -58,7 +59,7 @@ public class PRIDEModificationFactory {
      * The map containing the name of the modification and the
      * unimodmodification object
      */
-    private static LinkedHashMap<String, PRIDEModification> modificationNameMap = new LinkedHashMap<>();
+    private static LinkedHashMap<String, PTM> modificationNameMap = new LinkedHashMap<>();
     /**
      * The map containing the accession of the modification and the
      * unimodmodification name
@@ -159,7 +160,7 @@ public class PRIDEModificationFactory {
      */
     private void init(File inputFile) throws IOException {
         Collection<PRIDEModification> fromFile = getFromFile(inputFile);
-        for (PRIDEModification aUniMod : fromFile) {
+        for (PTM aUniMod : fromFile) {
             modificationNameMap.put(aUniMod.getName(), aUniMod);
             modificationAccessionMap.put(aUniMod.getAccession(), aUniMod.getName());
         }
@@ -173,8 +174,8 @@ public class PRIDEModificationFactory {
      * @throws InterruptedException if the multithreading pool fails
      */
     private void init() throws IOException, InterruptedException {
-        Collection<PRIDEModification> fromFile = getFromPRIDE();
-        for (PRIDEModification aUniMod : fromFile) {
+        Collection<PTM> fromFile = getFromPRIDE();
+        for (PTM aUniMod : fromFile) {
             modificationNameMap.put(aUniMod.getName(), aUniMod);
             modificationAccessionMap.put(aUniMod.getAccession(), aUniMod.getName());
         }
@@ -249,7 +250,7 @@ public class PRIDEModificationFactory {
      *
      * @return the modification map
      */
-    public LinkedHashMap<String, PRIDEModification> getModificationMap() {
+    public LinkedHashMap<String, PTM> getModificationMap() {
         return modificationNameMap;
     }
 
@@ -282,7 +283,7 @@ public class PRIDEModificationFactory {
         LinkedList<Modification> pride_mods = new LinkedList<>();
         DescriptiveStatistics massStats = new DescriptiveStatistics();
         int count = nr;
-        for (PRIDEModification aMod : modificationNameMap.values()) {
+        for (PTM aMod : modificationNameMap.values()) {
             Modification convertModification = new AsapModificationAdapter().convertModification(aMod);
             pride_mods.add(convertModification);
             massStats.addValue(aMod.getMonoDeltaMass());
@@ -306,40 +307,39 @@ public class PRIDEModificationFactory {
 
     private static TreeSet<PRIDEModification> getFromFile(File inputFile) throws IOException {
         JsonMarshaller marshaller = new JsonMarshaller();
-        LOGGER.debug("Getting modifications from file...");
-        java.lang.reflect.Type type = new TypeToken<TreeSet<PRIDEModification>>() {
-        }.getType();
+        LOGGER.info("Getting modifications from file...  " + inputFile.getAbsolutePath());
+        java.lang.reflect.Type type = new TypeToken<TreeSet<PRIDEModification>>() {}.getType();
         return (TreeSet<PRIDEModification>) marshaller.fromJson(type, inputFile);
     }
 
     public static void generatePRIDEModJson(File jsonFile) throws IOException {
         PRIDEModificationFactory factory = getInstance(INIT_MODE.ONLINE);
         //load the modifications
-        LinkedHashMap<String, PRIDEModification> modificationMap1 = factory.getModificationMap();
+        LinkedHashMap<String, PTM> modificationMap1 = factory.getModificationMap();
         //sort them according to frequency (the default comparator)
-        TreeSet<PRIDEModification> mods = new TreeSet<>();
+        TreeSet<PTM> mods = new TreeSet<>();
         mods.addAll(modificationMap1.values());
         //save them to a file
         JsonMarshaller marshaller = new JsonMarshaller();
         marshaller.saveObjectToJson(mods, jsonFile);
     }
 
-    public static TreeSet<PRIDEModification> getFromPRIDE() throws InterruptedException, IOException {
+    public static TreeSet<PTM> getFromPRIDE() throws InterruptedException, IOException {
         return getFromPRIDE(new ArrayList<PrideFilter>());
     }
 
-    public static TreeSet<PRIDEModification> getFromPRIDE(File outputFile) throws InterruptedException, IOException {
+    public static TreeSet<PTM> getFromPRIDE(File outputFile) throws InterruptedException, IOException {
         return getFromPRIDE(outputFile, new ArrayList<PrideFilter>());
     }
 
-    public static TreeSet<PRIDEModification> getFromPRIDE(Collection<PrideFilter> prideFilters) throws InterruptedException, IOException {
+    public static TreeSet<PTM> getFromPRIDE(Collection<PrideFilter> prideFilters) throws InterruptedException, IOException {
         ModReader modReader = ModReader.getInstance();
         System.out.println("Looking for modifications...;");
         ExecutorService executors = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         //   ExecutorService executors = Executors.newFixedThreadPool(1);
-        ArrayList<Future<PRIDEModification>> finishedMods = new ArrayList<>();
+        ArrayList<Future<PTM>> finishedMods = new ArrayList<>();
         System.out.println("Gathering modification occurences from pride...");
-        for (uk.ac.ebi.pridemod.model.PTM aPTM : modReader.getPTMListByPatternName("")) {
+        for (PTM aPTM : modReader.getPTMListByPatternName("")) {
             if (finishedMods.size() != MAX) {
                 finishedMods.add(executors.submit(new UniModOccurenceGetter(aPTM, prideFilters)));
             } else {
@@ -348,11 +348,11 @@ public class PRIDEModificationFactory {
         }
         executors.shutdown();
         executors.awaitTermination(100, TimeUnit.DAYS);
-        TreeSet<PRIDEModification> mods = new TreeSet<>();
-        for (Future<PRIDEModification> aUniModFuture : finishedMods) {
+        TreeSet<PTM> mods = new TreeSet<>();
+        for (Future<PTM> aUniModFuture : finishedMods) {
             try {
-                PRIDEModification get = aUniModFuture.get();
-                if (get.getFrequency() > 0 | prideFilters.isEmpty()) {
+                PTM get = aUniModFuture.get();
+                if (((PRIDEModification)get).getFrequency() > 0 | prideFilters.isEmpty()) {
                     Double monoDeltaMass = get.getMonoDeltaMass();
                     Double avgDeltaMass = get.getAveDeltaMass();
                     if (monoDeltaMass != null && avgDeltaMass != null && monoDeltaMass != 0.0 && avgDeltaMass != 0.0) {
@@ -367,8 +367,8 @@ public class PRIDEModificationFactory {
         return mods;
     }
 
-    public static TreeSet<PRIDEModification> getFromPRIDE(File outputFile, Collection<PrideFilter> prideFilters) throws InterruptedException, IOException {
-        TreeSet<PRIDEModification> mods = getFromPRIDE(prideFilters);
+    public static TreeSet<PTM> getFromPRIDE(File outputFile, Collection<PrideFilter> prideFilters) throws InterruptedException, IOException {
+        TreeSet<PTM> mods = getFromPRIDE(prideFilters);
         outputFile.getParentFile().mkdirs();
         JsonMarshaller marshaller = new JsonMarshaller();
         marshaller.saveObjectToJson(mods, outputFile);
@@ -376,18 +376,18 @@ public class PRIDEModificationFactory {
     }
 
     public static LinkedList<Object> orderModificationsToPrevalence(Collection<String> ptmNames, ModificationAdapter adapter) throws ParameterExtractionException {
-        TreeSet<PRIDEModification> orderedModifications = orderModificationsToPrevalence(ptmNames);
+        TreeSet<PTM> orderedModifications = orderModificationsToPrevalence(ptmNames);
         LinkedList<Object> orderedConvertedModifications = new LinkedList<>();
-        for (PRIDEModification aModification : orderedModifications) {
+        for (PTM aModification : orderedModifications) {
             orderedConvertedModifications.add(adapter.convertModification(aModification));
         }
         return orderedConvertedModifications;
     }
 
-    public static TreeSet<PRIDEModification> orderModificationsToPrevalence(Collection<String> ptmNames) {
-        TreeSet<PRIDEModification> orderedModifications = new TreeSet<>();
+    public static TreeSet<PTM> orderModificationsToPrevalence(Collection<String> ptmNames) {
+        TreeSet<PTM> orderedModifications = new TreeSet<>();
         for (String aPTMName : ptmNames) {
-            PRIDEModification uniModModification = modificationNameMap.get(aPTMName);
+            PTM uniModModification = modificationNameMap.get(aPTMName);
             if (uniModModification != null) {
                 orderedModifications.add(uniModModification);
             }
@@ -395,16 +395,16 @@ public class PRIDEModificationFactory {
         return orderedModifications;
     }
 
-    private static class UniModOccurenceGetter implements Callable<PRIDEModification> {
+    private static class UniModOccurenceGetter implements Callable<PTM> {
 
-        private final uk.ac.ebi.pridemod.model.PTM aPTM;
+        private final uk.ac.ebi.pride.utilities.pridemod.model.PTM aPTM;
         private Collection<PrideFilter> prideFilters = new ArrayList<>();
 
-        private UniModOccurenceGetter(uk.ac.ebi.pridemod.model.PTM aPTM) {
+        private UniModOccurenceGetter(uk.ac.ebi.pride.utilities.pridemod.model.PTM aPTM) {
             this.aPTM = aPTM;
         }
 
-        private UniModOccurenceGetter(uk.ac.ebi.pridemod.model.PTM aPTM, Collection<PrideFilter> prideFilters) {
+        private UniModOccurenceGetter(uk.ac.ebi.pride.utilities.pridemod.model.PTM aPTM, Collection<PrideFilter> prideFilters) {
             this.aPTM = aPTM;
             this.prideFilters.addAll(prideFilters);
         }

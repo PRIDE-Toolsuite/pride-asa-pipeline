@@ -53,7 +53,7 @@ public class ProjectExtractorTest extends TestCase {
         File temp = File.createTempFile("temp", ".tmp");
         temp.deleteOnExit();
         File outputFolder = File.createTempFile("temp", ".tmp").getParentFile();
-        FileParameterExtractor instance = new FileParameterExtractor(outputFolder, AnalyzerData.getAnalyzerDataByAnalyzerType("orbitrap"));
+        FileParameterExtractor instance = new FileParameterExtractor(outputFolder, AnalyzerData.getAnalyzerDataByAnalyzerType("orbitrap"), null);
 
         // File inputFile = getFileFromResources("PRIDE_Exp_Complete_Ac_3.xml.zip");
         File inputFile = getFileFromResources("PeptideShaker_example.xml.zip");

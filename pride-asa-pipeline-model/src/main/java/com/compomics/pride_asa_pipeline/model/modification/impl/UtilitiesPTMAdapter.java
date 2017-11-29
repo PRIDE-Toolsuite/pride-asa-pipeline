@@ -18,9 +18,8 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
-import uk.ac.ebi.pridemod.model.Specificity;
-import uk.ac.ebi.pridemod.model.Specificity.AminoAcid;
-import uk.ac.ebi.pridemod.model.Specificity.Position;
+import uk.ac.ebi.pride.utilities.pridemod.model.Specificity;
+
 
 /**
  *
@@ -69,12 +68,12 @@ public class UtilitiesPTMAdapter implements ModificationAdapter<PTM> {
     public static double getPTMCoverage() {
         UtilitiesPTMAdapter adapter = new UtilitiesPTMAdapter();
         PRIDEModificationFactory instance = PRIDEModificationFactory.getInstance();
-        LinkedHashMap<String, PRIDEModification> modificationMap = instance.getModificationMap();
+        LinkedHashMap<String, uk.ac.ebi.pride.utilities.pridemod.model.PTM> modificationMap = instance.getModificationMap();
         double coverage = 0;
         double atomNI = 0;
         double unparseable = 0;
         double wrongMass = 0;
-        for (Map.Entry<String, PRIDEModification> aMod : modificationMap.entrySet()) {
+        for (Map.Entry<String, uk.ac.ebi.pride.utilities.pridemod.model.PTM> aMod : modificationMap.entrySet()) {
             if (aMod.getValue().getFormula().equals("none")) {
                 coverage++;
             } else if (pattern1.matcher(aMod.getValue().getFormula()).find()) {
@@ -109,7 +108,7 @@ public class UtilitiesPTMAdapter implements ModificationAdapter<PTM> {
     }
 
     @Override
-    public PTM convertModification(PRIDEModification mod) throws ParameterExtractionException {
+    public PTM convertModification(uk.ac.ebi.pride.utilities.pridemod.model.PTM mod) throws ParameterExtractionException {
         increaseMassChain = new AtomChain();
         decreaseMassChain = new AtomChain();
         LOGGER.debug("Getting target residues");
@@ -135,13 +134,54 @@ public class UtilitiesPTMAdapter implements ModificationAdapter<PTM> {
         return ptm;
     }
 
-    private void fetchTargetResidues(uk.ac.ebi.pridemod.model.PTM ptm) {
-        HashSet<AminoAcid> targetResidues = new HashSet<>();
+    public PTM convertModification(uk.ac.ebi.pride.utilities.pridemod.model.PTM mod, String site) throws ParameterExtractionException {
+        increaseMassChain = new AtomChain();
+        decreaseMassChain = new AtomChain();
+        LOGGER.debug("Getting target residues");
+        fetchTargetResidues(mod, site);
+        LOGGER.debug("Parsing PTM composition");
+        parseFormula(mod.getFormula());
+        AminoAcidPattern pattern = new AminoAcidPattern(targetResiduesString);
+        LOGGER.debug("Inferring modification type");
+        int type = PTM.MODAA;
+
+        // Override the Type
+        if(site.equalsIgnoreCase(Specificity.Position.NTERM.toString()))
+            type = 5;
+        else if(site.equalsIgnoreCase(Specificity.Position.CTERM.toString()))
+            type = 7;
+        else if(site.equalsIgnoreCase(Specificity.Position.PCTERM.toString()))
+            type = 3;
+        else if(site.equalsIgnoreCase(Specificity.Position.PNTERM.toString()))
+            type = 1;
+        else
+            type = getModType(mod);
+
+        //check if the mass can be correctly retrieved, if not then throw a conversionexception???
+        PTM ptm = new PTM(type, mod.getName(), mod.getAccession(), increaseMassChain, decreaseMassChain, pattern);
+        //check that the modifications are not just substitutions and remove the amino acid mass if applicable
+        //     System.out.println("Ptm mass is now " + ptm.getMass());
+        checkSubstitutions(mod, ptm);
+        //  System.out.println("Ptm mass is now " + ptm.getMass());
+        //check for reported differences with the original unimod mass (for example loss of H2O, addition of CO, ...)
+        checkChemicalLosses(mod, ptm);
+        // System.out.println("Ptm mass is now " + ptm.getMass());
+        double massDifference = calculateMassDelta(ptm, mod);
+        if (massDifference > 1) {
+            throw new ParameterExtractionException(ptm.getName() + " differs more than 1 da from the reported mono-isotopic mass value (" + massDifference + ")");
+        }
+        return ptm;
+    }
+
+
+
+    private void fetchTargetResidues(uk.ac.ebi.pride.utilities.pridemod.model.PTM ptm) {
+        HashSet<Specificity.AminoAcid> targetResidues = new HashSet<>();
         ArrayList<String> targetResiduesStringBuilder = new ArrayList<>();
         for (Specificity specificity : ptm.getSpecificityCollection()) {
             if (specificity != null) {
                 if (specificity.getName() != null) {
-                    if (!specificity.getName().equals(AminoAcid.NONE) && !targetResidues.contains(specificity.getName())) {
+                    if (!specificity.getName().equals(Specificity.AminoAcid.NONE) && !targetResidues.contains(specificity.getName())) {
                         targetResidues.add(specificity.getName());
                         targetResiduesStringBuilder.add(specificity.getName().toString());
                     }
@@ -151,16 +191,35 @@ public class UtilitiesPTMAdapter implements ModificationAdapter<PTM> {
         this.targetResiduesString = targetResiduesStringBuilder;
     }
 
-    private int getModType(uk.ac.ebi.pridemod.model.PTM ptm) {
-        HashMap<Position, Integer> positionMap = new HashMap<>();
+    private void fetchTargetResidues(uk.ac.ebi.pride.utilities.pridemod.model.PTM ptm, String site) {
+        HashSet<Specificity.AminoAcid> targetResidues = new HashSet<>();
+        ArrayList<String> targetResiduesStringBuilder = new ArrayList<>();
+        for (Specificity specificity : ptm.getSpecificityCollection()) {
+            if (specificity != null) {
+                if (specificity.getName() != null) {
+                    if(specificity.getName().name().equalsIgnoreCase(site)){
+                        targetResidues.add(specificity.getName());
+                        targetResiduesStringBuilder.add(specificity.getName().toString());
+                    }
+                }else if(specificity.getName().name() == Specificity.AminoAcid.NONE.name()){
+                    targetResidues.add(specificity.getName());
+                    targetResiduesStringBuilder.add(specificity.getName().toString());
+                }
+            }
+        }
+        this.targetResiduesString = targetResiduesStringBuilder;
+    }
+
+    private int getModType(uk.ac.ebi.pride.utilities.pridemod.model.PTM ptm) {
+        HashMap<Specificity.Position, Integer> positionMap = new HashMap<>();
         for (Specificity specificity : ptm.getSpecificityCollection()) {
             positionMap.put(specificity.getPosition(), positionMap.getOrDefault(specificity.getPosition(), 0) + 1);
         }
-        int nTermPeptides = positionMap.getOrDefault(Position.NTERM, 0);
-        int cTermPeptides = positionMap.getOrDefault(Position.NTERM, 0);
-        int nTermProteins = positionMap.getOrDefault(Position.PNTERM, 0);
-        int cTermProteins = positionMap.getOrDefault(Position.PCTERM, 0);
-        int noTerm = positionMap.getOrDefault(Position.NONE, 0);
+        int nTermPeptides = positionMap.getOrDefault(Specificity.Position.NTERM, 0);
+        int cTermPeptides = positionMap.getOrDefault(Specificity.Position.NTERM, 0);
+        int nTermProteins = positionMap.getOrDefault(Specificity.Position.PNTERM, 0);
+        int cTermProteins = positionMap.getOrDefault(Specificity.Position.PCTERM, 0);
+        int noTerm = positionMap.getOrDefault(Specificity.Position.NONE, 0);
 
         //TODO review this
         //if one is none specific, all should be set to none specific to get all of them covered...
@@ -197,7 +256,7 @@ public class UtilitiesPTMAdapter implements ModificationAdapter<PTM> {
         }
     }
 
-    private void checkSubstitutions(PRIDEModification pridePTM, PTM convertedPTM) {
+    private void checkSubstitutions(uk.ac.ebi.pride.utilities.pridemod.model.PTM pridePTM, PTM convertedPTM) {
         //check for amino acid names in the mod name...
         if (pridePTM.getSpecificityCollection().size() == 1) {
             //this will only work if there is but a single amino acid target
@@ -338,12 +397,12 @@ public class UtilitiesPTMAdapter implements ModificationAdapter<PTM> {
 
     }
 
-    private double calculateMassDelta(PTM convertedPTM, PRIDEModification pridePTM) {
+    private double calculateMassDelta(PTM convertedPTM, uk.ac.ebi.pride.utilities.pridemod.model.PTM pridePTM) {
         double delta = pridePTM.getMonoDeltaMass() - (convertedPTM.getAtomChainAdded().getMass() + convertedPTM.getAtomChainRemoved().getMass());
         return delta;
     }
 
-    private void checkChemicalLosses(PRIDEModification pridePTM, PTM convertedPTM) {
+    private void checkChemicalLosses(uk.ac.ebi.pride.utilities.pridemod.model.PTM pridePTM, PTM convertedPTM) {
         //in case of a missmatch
         //double mass_delta = (convertedPTM.getRoundedMass() - pridePTM.getMonoDeltaMass());
         double mass_delta = calculateMassDelta(convertedPTM, pridePTM);
