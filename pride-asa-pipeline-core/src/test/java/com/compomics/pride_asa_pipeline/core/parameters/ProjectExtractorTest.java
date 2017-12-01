@@ -56,7 +56,7 @@ public class ProjectExtractorTest extends TestCase {
         FileParameterExtractor instance = new FileParameterExtractor(outputFolder, AnalyzerData.getAnalyzerDataByAnalyzerType("orbitrap"), null);
 
         // File inputFile = getFileFromResources("PRIDE_Exp_Complete_Ac_3.xml.zip");
-        File inputFile = getFileFromResources("PeptideShaker_example.xml.zip");
+        File inputFile = getFileFromResources("PeptideShaker_Example.xml.zip");
 
         SearchParameters identificationParameters = instance.analyzePrideXML(inputFile, "test_" + inputFile.getName().replace(".xml", ""));
 
