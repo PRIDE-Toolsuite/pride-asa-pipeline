@@ -89,7 +89,7 @@ public class ParameterExtractor {
     /**
      * Boolean indicating if the results should be verified against the webservice
      */
-    private boolean verifyWebService=true;
+    private boolean verifyWebService=false;
     
           /**
      * An extractor for parameters
